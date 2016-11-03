@@ -17,6 +17,7 @@ class NewVisitorTest(unittest.TestCase):
         self.browser.quit()
     
     def check_for_row_in_list_table(self, row_text):
+        time.sleep(0.1) 
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
         self.assertIn(row_text, [row.text for row in rows])
@@ -45,8 +46,6 @@ class NewVisitorTest(unittest.TestCase):
         # "1: Buy cake" as an item in a to-do list
         inputbox.send_keys(Keys.ENTER)
 
-        table = self.browser.find_element_by_id('id_list_table')
-        rows = table.find_elements_by_tag_name('tr')
         self.check_for_row_in_list_table('1: Buy cake')
 
         # There is still a text box inviting her to add another item. She
@@ -56,8 +55,6 @@ class NewVisitorTest(unittest.TestCase):
         inputbox.send_keys(Keys.ENTER)
 
         # The page updates again, and now shows both items on her list
-        table = self.browser.find_element_by_id('id_list_table')
-        rows = table.find_elements_by_tag_name('tr')
         self.check_for_row_in_list_table('1: Buy cake')
         self.check_for_row_in_list_table('2: Eat cake')
     
