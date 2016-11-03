@@ -44,7 +44,8 @@ class NewVisitorTest(LiveServerTestCase):
         # When she hits enter, the page updates, and now the page lists
         # "1: Buy cake" as an item in a to-do list
         inputbox.send_keys(Keys.ENTER)
-
+        mudi_list_url = self.browser.current_url
+        self.assertRegex(mudi_list_url, '/lists/.+')      
         self.check_for_row_in_list_table('1: Buy cake')
 
         # There is still a text box inviting her to add another item. She
@@ -57,13 +58,35 @@ class NewVisitorTest(LiveServerTestCase):
         self.check_for_row_in_list_table('1: Buy cake')
         self.check_for_row_in_list_table('2: Eat cake')
     
-        # Mudi wonders whether the site will remember her list. Then she sees
+        # A new user, Frank, comes along to the site.
+        
+        ## We use a new browser session to ensure nothing from Mudi is coming
+        ## through from cookies etc.
+        self.browser.quit()
+        self.browser = webdriver.Firefox()
+
+        # Frank visits the home page with no sign of Mudi's list
+        self.browser.get(self.live_server_url)
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertNotIn('Buy cake', page_text)
+        self.assertNotIn('Eat cake', page_text)
+
+        # Frank starts a new list by entering a new item. He is less 
+        # interesting than Mudi...
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox.send_keys('Buy milk')
+        inputbox.send_keys(Keys.ENTER)
+
+        # Frank gets his own browser URL
+        francis_list_url = self.browser.current_url
+        self.assertRegex(francis_list_url, '/lists/.+')
+        self.assertNotEquals(francis_list_url, mudi_list_url)
+
+        # Again, there is no trace of Mudi's list
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertNotIn('Buy cake', page_text)
+        self.assertNotIn('Eat cake', page_text)
+
+        # Satisfied, they both go back to sleep 
         self.fail('Finish the test!')
-
-        # that the site has generated a unique URL for her -- there is some
-        # explanatory text to that effect.
-
-        # She visits that URL - her to-do list is still there.
-
-        # Satisfied, she goes back to sleep
 
