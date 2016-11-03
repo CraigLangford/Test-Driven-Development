@@ -5,6 +5,7 @@ Following Book
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import unittest
+import time
 
 class NewVisitorTest(unittest.TestCase): 
 
@@ -37,22 +38,27 @@ class NewVisitorTest(unittest.TestCase):
 
         # When she hits enter, the page updates, and now the page lists
         # "1: Buy cake" as an item in a to-do list
-        inputbox.send_keys('Keys.Enter')
+        inputbox.send_keys(Keys.ENTER)
 
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
-        self.assertTrue(
-            any(row.text == '1: Buy cake' for row in rows),
-            "New to-do item did not appear in table."
-        )
+        self.assertIn('1: Buy cake', [row.text for row in rows])
 
         # There is still a text box inviting her to add another item. She
         # enters "Eat cake" (Mudi is very methodical)
-        self.fail('Finish the test!')
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox.send_keys('Eat cake')
+        inputbox.send_keys(Keys.ENTER)
 
         # The page updates again, and now shows both items on her list
+        table = self.browser.find_element_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertIn('1: Buy cake', [row.text for row in rows])
+        self.assertIn('2: Eat cake', [row.text for row in rows])
 
         # Mudi wonders whether the site will remember her list. Then she sees
+        self.fail('Finish the test!')
+
         # that the site has generated a unique URL for her -- there is some
         # explanatory text to that effect.
 
