@@ -1,10 +1,11 @@
-from django.core.urlresolvers import resolve 
+from django.core.urlresolvers import resolve
 from django.test import TestCase
 from django.http import HttpRequest
-from django.template.loader import render_to_string 
+from django.template.loader import render_to_string
 
 from lists.models import Item, List
-from lists.views import home_page 
+from lists.views import home_page
+
 
 class HomePageTest(TestCase):
 
@@ -23,8 +24,9 @@ class HomePageTest(TestCase):
         home_page(request)
         self.assertEqual(Item.objects.count(), 0)
 
+
 class NewListTest(TestCase):
-            
+
     def test_saving_a_POST_request(self):
         self.client.post(
             '/lists/new',
@@ -33,7 +35,7 @@ class NewListTest(TestCase):
         self.assertEqual(Item.objects.count(), 1)
         new_item = Item.objects.first()
         self.assertEqual(new_item.text, 'A new list item')
-        
+
     def test_redirects_after_post(self):
         response = self.client.post(
             '/lists/new',
@@ -41,6 +43,7 @@ class NewListTest(TestCase):
         )
         new_list = List.objects.first()
         self.assertRedirects(response, '/lists/%d/' % (new_list.id))
+
 
 class ListAndItemModelsTest(TestCase):
 
@@ -62,7 +65,7 @@ class ListAndItemModelsTest(TestCase):
         second_item.save()
 
         saved_items = Item.objects.all()
-        self.assertEqual(saved_items.count(),2)
+        self.assertEqual(saved_items.count(), 2)
 
         first_saved_item = saved_items[0]
         second_saved_item = saved_items[1]
@@ -71,13 +74,13 @@ class ListAndItemModelsTest(TestCase):
         self.assertEqual(second_saved_item.text, 'Item the second')
         self.assertEqual(second_saved_item.list, list_)
 
+
 class ListViewTest(TestCase):
 
     def test_uses_listed_template(self):
         list_ = List.objects.create()
         response = self.client.get('/lists/%d/' % (list_.id))
         self.assertTemplateUsed(response, 'list.html')
-
 
     def test_displays_all_items(self):
         correct_list = List.objects.create()
