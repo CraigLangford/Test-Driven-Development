@@ -24,7 +24,6 @@ class HomePageTest(TestCase):
         home_page(request)
         self.assertEqual(Item.objects.count(), 0)
 
-
 class NewListTest(TestCase):
 
     def test_saving_a_POST_request(self):
@@ -130,3 +129,10 @@ class NewItemTest(TestCase):
         )
 
         self.assertRedirects(response, 'lists/%d/' % (correct_list.id))
+
+
+class ModalWindowTest(TestCase):
+    """Tests whether the modal window loads or not"""
+
+    def test_modal_window_exists(self):
+

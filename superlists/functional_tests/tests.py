@@ -2,9 +2,24 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
+import sys
 
 
 class NewVisitorTest(StaticLiveServerTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        for arg in sys.argv:
+            if 'liveserver' in arg:
+                cls.server_url = 'http://' + arg.split('=')[1]
+                return
+        super().setUpClass()
+        cls.server_url = cls.live_server_url
+
+    @classmethod
+    def tearDownClass(cls):
+        if cls.server_url == cls.live_server_url:
+            super().tearDownClass()
 
     def setUp(self):
         self.browser = webdriver.Firefox()
@@ -22,7 +37,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
     def test_can_start_a_list_and_retrieve_it_later(self):
         # Mudi has heard about a cool new online to-do app. She goes
         # to check out its homepage
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         # She notices the page title and header mention to-do lists
         self.assertIn('To-Do', self.browser.title)
         header_text = self.browser.find_element_by_tag_name('h1').text
@@ -58,13 +73,13 @@ class NewVisitorTest(StaticLiveServerTestCase):
 
         # A new user, Frank, comes along to the site.
 
-        ## We use a new browser session to ensure nothing from Mudi is coming
-        ## through from cookies etc.
+        # We use a new browser session to ensure nothing from Mudi is coming
+        # through from cookies etc.
         self.browser.quit()
         self.browser = webdriver.Firefox()
 
         # Frank visits the home page with no sign of Mudi's list
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         page_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn('Buy cake', page_text)
         self.assertNotIn('Eat cake', page_text)
@@ -79,7 +94,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         time.sleep(0.1)
         francis_list_url = self.browser.current_url
         self.assertRegex(francis_list_url, '/lists/.+')
-        self.assertNotEquals(francis_list_url, mudi_list_url)
+        self.assertNotEqual(francis_list_url, mudi_list_url)
 
         # Again, there is no trace of Mudi's list
         page_text = self.browser.find_element_by_tag_name('body').text
@@ -89,8 +104,9 @@ class NewVisitorTest(StaticLiveServerTestCase):
         # Satisfied, they both go back to sleep
 
     def test_layout_and_styling(self):
+        """ Tests the layout and styling of the home and list pages"""
         # Mudi goes to the home page
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         self.browser.set_window_size(1024, 768)
 
         # She notices the input box is nicely centered
