@@ -29,7 +29,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         self.browser.quit()
 
     def check_for_row_in_list_table(self, row_text):
-        time.sleep(0.1)
+        time.sleep(0.5)
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
         self.assertIn(row_text, [row.text for row in rows])
@@ -56,7 +56,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         # When she hits enter, the page updates, and now the page lists
         # "1: Buy cake" as an item in a to-do list
         inputbox.send_keys(Keys.ENTER)
-        time.sleep(0.1)
+        time.sleep(0.5)
         mudi_list_url = self.browser.current_url
         self.assertRegex(mudi_list_url, '/lists/.+')
         self.check_for_row_in_list_table('1: Buy cake')
@@ -91,7 +91,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         inputbox.send_keys(Keys.ENTER)
 
         # Frank gets his own browser URL
-        time.sleep(0.1)
+        time.sleep(1)
         francis_list_url = self.browser.current_url
         self.assertRegex(francis_list_url, '/lists/.+')
         self.assertNotEqual(francis_list_url, mudi_list_url)
