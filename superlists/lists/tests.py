@@ -129,10 +129,3 @@ class NewItemTest(TestCase):
         )
 
         self.assertRedirects(response, 'lists/%d/' % (correct_list.id))
-
-
-class ModalWindowTest(TestCase):
-    """Tests whether the modal window loads or not"""
-
-    def test_modal_window_exists(self):
-
